@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TOPSIS Analysis Web Tool</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            headerBlue: '#1B263B',
+            bgGray: '#F0F2F5',
+            actionGreen: '#109D73',
+            actionGreenHover: '#0d8562',
+            uploadBorder: '#3B82F6',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-bgGray font-sans">
+
+<!-- HEADER -->
+<header class="bg-headerBlue text-white pt-16 pb-32 px-4 text-center">
+  <h1 class="text-4xl font-bold">TOPSIS Analysis Web Tool</h1>
+  <p class="mt-3 text-gray-200">
+    Upload your dataset, apply weights and impacts, and get ranked results.
+  </p>
+</header>
+
+<!-- MAIN -->
+<main class="-mt-20 px-4 pb-12">
+  <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+
+    <h2 class="text-2xl font-bold text-center mb-6">Start Analysis</h2>
+
+    <!-- FORM -->
+    <form id="topsisForm" enctype="multipart/form-data" class="space-y-5">
+
+      <!-- FILE INPUT -->
+      <input
+        type="file"
+        id="file"
+        name="file"
+        accept=".csv,.xlsx,.xls"
+        required
+        class="hidden"
+      />
+
+      <!-- UPLOAD BOX -->
+      <div
+        id="uploadBox"
+        onclick="document.getElementById('file').click()"
+        class="cursor-pointer border-2 border-dashed border-uploadBorder p-6 rounded-lg text-center bg-blue-50 hover:bg-blue-100 transition"
+      >
+        <p id="uploadText" class="font-semibold">
+          Click to upload CSV / Excel file
+        </p>
+        <p class="text-sm text-gray-500">
+          Supported: .csv, .xlsx
+        </p>
+      </div>
+
+      <!-- CHANGE FILE OPTION -->
+      <button
+        type="button"
+        id="changeFileBtn"
+        onclick="document.getElementById('file').click()"
+        class="hidden text-sm text-blue-600 underline"
+      >
+        Change file
+      </button>
+
+      <!-- WEIGHTS -->
+      <div>
+        <label class="font-semibold">Weights (comma-separated)</label>
+        <input
+          type="text"
+          name="weights"
+          required
+          placeholder="0.3,0.2,0.1,0.4"
+          class="w-full mt-1 rounded-md border-gray-300"
+        />
+      </div>
+
+      <!-- IMPACTS -->
+      <div>
+        <label class="font-semibold">Impacts (+ or -)</label>
+        <input
+          type="text"
+          name="impacts"
+          required
+          placeholder="+,-,+,-"
+          class="w-full mt-1 rounded-md border-gray-300"
+        />
+      </div>
+
+      <!-- EMAIL -->
+      <div>
+        <label class="font-semibold">Email Address</label>
+        <input
+          type="email"
+          name="email"
+          required
+          placeholder="example@email.com"
+          class="w-full mt-1 rounded-md border-gray-300"
+        />
+      </div>
+
+      <!-- SUBMIT -->
+      <button
+        type="submit"
+        class="w-full bg-actionGreen hover:bg-actionGreenHover text-white py-3 rounded-md font-semibold">
+        Run TOPSIS Analysis
+      </button>
+
+    </form>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="text-center text-sm text-gray-600 py-6">
+  © 2026 TOPSIS Web Tool
+</footer>
+
+<!-- JAVASCRIPT -->
+<script>
+const fileInput = document.getElementById("file");
+const uploadText = document.getElementById("uploadText");
+const changeFileBtn = document.getElementById("changeFileBtn");
+
+fileInput.addEventListener("change", function () {
+  if (this.files.length > 0) {
+    uploadText.innerText = "Uploaded file: " + this.files[0].name;
+    changeFileBtn.classList.remove("hidden");
+  }
+});
+
+document.getElementById("topsisForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  try {
+    const response = await fetch("/analyze", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert(data.message);
+      window.location.href = `/download/${data.result_file}`;
+    } else {
+      alert("Error: " + data.message);
+    }
+  } catch (err) {
+    alert("Server error. Check console.");
+    console.error(err);
+  }
+});
+</script>
+
+</body>
+</html>
