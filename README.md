@@ -47,7 +47,7 @@ The system ranks alternatives based on their closeness to the ideal solution usi
 
 ## **4. Live Link**
 🔗 **Web Application:**  
-https://topsis-39z8.vercel.app/  
+https://topsis-tr8s.vercel.app/ 
 
 🔗 **PyPI Package:**  
 https://pypi.org/project/topsis-lovepreet-102303335/
